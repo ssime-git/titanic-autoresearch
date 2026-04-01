@@ -24,7 +24,12 @@ def create_features(
     """
     X_new = X.copy()
 
-    # ITERATION 0: Baseline - no features added
-    # TODO: Agent adds feature engineering code here in next iteration
+    # ITERATION 2: FamilySize
+    # Hypothesis: Passengers traveling alone had different survival rates than
+    # those with family. Solo travelers may have been more mobile, while families
+    # had to coordinate and potentially sacrifice spots. Also large families may
+    # have struggled to all get on lifeboats.
+    if df_raw is not None:
+        X_new["family_size"] = df_raw["sibsp"] + df_raw["parch"] + 1
 
     return X_new
