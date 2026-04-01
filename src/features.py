@@ -75,4 +75,13 @@ def create_features(
         # Avoid division by zero (should not happen as family_sz >=1)
         X_new["fare_per_family"] = X_new["fare"] / family_sz
 
+    # ITERATION 6: Age Group Bins
+    # Hypothesis: Survival varies by age categories (children prioritized, seniors less likely). Binning age may capture non-linear effects.
+    if X_new.get('age') is not None:
+        age_bins = pd.cut(X_new['age'], bins=[0, 12, 18, 40, 60, 100],
+                         labels=['child', 'teen', 'adult', 'senior', 'elder'], right=False)
+        age_dummies = pd.get_dummies(age_bins, prefix='age_group')
+        for col in age_dummies.columns:
+            X_new[col] = age_dummies[col].astype(float)
+
     return X_new
