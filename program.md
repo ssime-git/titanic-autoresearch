@@ -14,7 +14,7 @@ Work with the user to:
    * `docs/PRD.md` — full specifications (reference, not a must-read every time).
 4. **Prepare data**: Check that `data/raw/titanic_original.csv` exists. If not, download from [Geoyi/Cleaning-Titanic-Data](https://raw.githubusercontent.com/Geoyi/Cleaning-Titanic-Data/master/titanic_original.csv).
 5. **Initialize logs/iterations.jsonl**: Create `logs/iterations.jsonl` as an empty file. The first hypothesis will create the first log entry.
-6. **Verify requirements**: Using UVX: `uvx --with pandas --with scikit-learn --with matplotlib --with seaborn python notebooks/autoresearch_loop.py`
+6. **Verify setup**: `make check` to ensure data and directories are ready.
 7. **Confirm and go**: Confirm setup looks good, then kick off experimentation.
 
 ## Experimentation
@@ -218,7 +218,7 @@ If you run out of immediate ideas before hitting stop condition:
 
 After each successful run:
 ```bash
-git add notebooks/autoresearch_loop.py
+git add src/autoresearch_loop.py
 git commit -m "Iteration N: <feature> - <reason>"
 ```
 
@@ -243,7 +243,7 @@ If the experiment is interrupted:
 Example resume:
 ```bash
 git checkout autoresearch/apr1_v1
-uvx --with pandas --with scikit-learn --with matplotlib --with seaborn --with numpy python notebooks/autoresearch_loop.py
+make run
 ```
 
 ## Key Rules
