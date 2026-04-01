@@ -34,4 +34,12 @@ def create_features(
     # Analysis: Wealth and age likely act as independent predictors,
     # their interaction adds noise rather than signal.
 
+    # ITERATION 2: FamilySize
+    # Hypothesis: Passengers traveling alone had different survival rates than
+    # those with family. Solo travelers may have been more mobile during evacuation,
+    # while large families faced coordination challenges. Medium families (2-4 members)
+    # may have helped each other, while very large families struggled.
+    if df_raw is not None:
+        X_new["family_size"] = df_raw["sibsp"] + df_raw["parch"] + 1
+
     return X_new
