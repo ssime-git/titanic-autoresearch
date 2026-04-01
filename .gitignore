@@ -30,7 +30,8 @@ Thumbs.db
 # Project outputs
 data/processed/
 logs/
-plots/
+# plots/ directory is now tracked
+
 *.png
 *.jpg
 *.jsonl
@@ -46,3 +47,6 @@ docs/
 *.pkl
 *.joblib
 *.model
+
+# Unignore plot images
+!plots/*.png
