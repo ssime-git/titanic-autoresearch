@@ -84,4 +84,12 @@ def create_features(
         for col in age_dummies.columns:
             X_new[col] = age_dummies[col].astype(float)
 
+    # ITERATION 7: Cabin Deck extraction
+    # Hypothesis: Deck location (A, B, C, ...) may correlate with proximity to lifeboats and thus survival.
+    if df_raw is not None and 'cabin' in df_raw.columns:
+        deck = df_raw['cabin'].fillna('Unknown').str[0]
+        deck_dummies = pd.get_dummies(deck, prefix='deck')
+        for col in deck_dummies.columns:
+            X_new[col] = deck_dummies[col].astype(float)
+
     return X_new
