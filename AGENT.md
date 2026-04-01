@@ -30,7 +30,7 @@ You are an autonomous AI researcher. Your task: iteratively improve a machine le
 **Each iteration**:
 
 1. Formulate a clear hypothesis (in English, explain why this feature should help)
-2. Implement the feature in `src/autoresearch_loop.py` (modify `create_features()` function only)
+2. Implement the feature in `src/features.py` (modify `create_features()` function only)
 3. Test by running: `make run`
 4. Analyze results: Why did it work or fail? Which subgroups benefited?
 5. Log to `logs/iterations.jsonl` (append-only JSONL, one line per iteration)
@@ -40,7 +40,7 @@ You are an autonomous AI researcher. Your task: iteratively improve a machine le
 
 ## What You CAN Do
 
-- Modify `src/autoresearch_loop.py` (the ONLY file you edit)
+- Modify `src/features.py` (the ONLY file you edit)
 - Derive features from ANY dataset column (name, cabin, age, fare, sex, embarked, pclass, sibsp, parch, etc.)
 - Create interactions, bins, transformations (log, sqrt, polynomial, etc.)
 - Use any sklearn classifier that runs <1 min per iteration (LogisticRegression, RandomForest, DecisionTree, SVC, etc.)
@@ -125,7 +125,7 @@ The PRD suggests 7 features, but you can propose your own:
 
 ```bash
 # After each successful iteration
-git add src/autoresearch_loop.py
+git add src/features.py
 git commit -m "Iteration N: Feature_Name - Brief hypothesis summary"
 
 # If discarding (AUC worsened)
@@ -136,7 +136,7 @@ git reset --hard HEAD~1  # Revert to previous commit
 
 ```bash
 # Each iteration
-make run  # Runs src/autoresearch_loop.py via UVX
+make run  # Runs autoresearch loop (python -m src.main via UVX)
 
 # Monitor progress
 tail -f logs/iterations.jsonl  # Watch iterations stream in
@@ -156,7 +156,7 @@ plots/metrics_dashboard.png         # Heatmap of all metrics
 4. Analysis: Explain why features work, not just that they improve AUC.
 5. Simplicity: Prefer simple features over complex ones for same AUC gain.
 6. No target leakage: Features from X (input) only, never y (target).
-7. Only modify src/autoresearch_loop.py: No new files.
+7. Only modify src/features.py: No new files.
 
 ## Stop Signals
 
@@ -176,7 +176,7 @@ Iteration 0 (baseline):
   → Log: baseline_auc=0.8654, auc=0.8654, improvement=+0.3654 vs 0.5
 
 Iteration 1 (Age×Fare):
-  → Edit src/autoresearch_loop.py: add Age_Fare_Interaction feature
+  → Edit src/features.py: add Age_Fare_Interaction feature
   → Commit: "Iteration 1: Age_Fare_Interaction - Test older wealthy subgroup"
   → Run make run
   → Metrics: auc=0.8720, improvement=+0.0066 (vs baseline)
