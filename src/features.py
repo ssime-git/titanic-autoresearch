@@ -60,4 +60,10 @@ def create_features(
         for col in title_dummies.columns:
             X_new[col] = title_dummies[col].astype(float)
 
+    # ITERATION 4: IsAlone flag
+    # Hypothesis: Passengers traveling alone (family size == 1) may have been more mobile and thus higher survival probability.
+    if df_raw is not None:
+        family_sz = df_raw["sibsp"] + df_raw["parch"] + 1
+        X_new["is_alone"] = (family_sz == 1).astype(int)
+
     return X_new
