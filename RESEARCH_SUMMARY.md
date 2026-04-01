@@ -17,6 +17,13 @@ Each iteration:
 
 ## Iteration Log Summary
 
+### Model Change Iteration
+| Iter | Model | Hypothesis | AUC | Δ AUC | Status | Insight |
+|------|-------|------------|-----|------|--------|---------|
+| 9 | RandomForest | Tree‑based ensembles may capture interactions automatically. | 0.8615 | -0.0205 | discard | Worse than LogisticRegression; overfitting on small data. |
+
+### Feature Iterations (previous summary continues)
+
 | Iter | Feature | Hypothesis | AUC | Δ AUC | Status | Insight |
 |------|----------|------------|-----|------|--------|---------|
 | 0 | baseline | None | 0.8654 | – | baseline | Base LogisticRegression.
