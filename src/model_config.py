@@ -21,4 +21,7 @@ def get_model():
     Returns:
         Unfitted sklearn classifier instance.
     """
-    return LogisticRegression(random_state=42, max_iter=1000)
+    # ITERATION 9: Switch to RandomForest for potentially higher non‑linear capacity.
+    # Hypothesis: Tree‑based ensembles can capture interactions (e.g., Title + FamilySize) automatically.
+    return RandomForestClassifier(n_estimators=200, random_state=42, max_depth=None, n_jobs=-1)
+
