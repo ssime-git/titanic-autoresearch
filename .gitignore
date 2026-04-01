@@ -35,6 +35,9 @@ plots/
 *.jpg
 *.jsonl
 
+# Documentation (generated/external)
+docs/
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb

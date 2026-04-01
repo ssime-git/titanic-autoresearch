@@ -27,7 +27,7 @@ To run this project with an autonomous agent:
 1. Read AGENT.md for the complete prompt
 2. Create a new branch: `git checkout -b autoresearch/apr1_v1`
 3. Run: `make setup` then `make run`
-4. Modify only `src/autoresearch_loop.py` to add features
+4. Modify only `src/features.py` to add features
 
 See AGENT.md for:
 - Complete instructions and rules
@@ -42,10 +42,14 @@ titanic-autoresearch/
 ├── README.md              # This file
 ├── AGENT.md               # Agent prompt and instructions
 ├── program.md             # Detailed operational guide
-├── docs/
-│   └── PRD.md            # Full specifications
-├── src/
-│   └── autoresearch_loop.py  # Main script (agent modifies)
+├── src/                   # Modular source code
+│   ├── __init__.py
+│   ├── main.py           # Entry point (orchestration)
+│   ├── data.py           # Load and preprocess
+│   ├── model.py          # Train and evaluate
+│   ├── features.py       # Agent modifies this
+│   ├── logging_utils.py  # Iteration logging
+│   └── visualization.py  # Plot generation
 ├── data/
 │   ├── raw/
 │   │   └── titanic_original.csv
@@ -73,25 +77,10 @@ make clean-all  # Remove all outputs
 make help       # Show help
 ```
 
-## Technical Details
-
-Baseline:
-- Model: LogisticRegression(random_state=42, max_iter=1000)
-- Evaluation: AUC-ROC on validation set
-- Features: 8 baseline features (pclass, age, sibsp, parch, fare, sex, embarked)
-- Data: 1309 rows with 14 columns available for feature engineering
-
-Code quality:
-- Type hints: 100% function coverage
-- Linting: Ruff passed
-- Exception handling: Comprehensive try/except blocks
-- Logging: Structured Python logging with no emojis
-
 ## References
 
 - Autoresearch pattern: https://github.com/karpathy/autoresearch
 - Titanic dataset: https://github.com/Geoyi/Cleaning-Titanic-Data
-- Full specifications: See docs/PRD.md
 
 ## License
 
