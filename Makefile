@@ -1,7 +1,7 @@
 # Titanic Autoresearch Makefile
 # Uses UVX for dependency management (no venv needed)
 
-.PHONY: setup install download run check clean clean-all help
+.PHONY: setup install download run check lint clean clean-all help
 
 # Default target
 .DEFAULT_GOAL := help
@@ -31,11 +31,17 @@ run: download
 
 # Check environment and data
 check:
-	@echo "🔍 Checking setup..."
-	@command -v uvx >/dev/null 2>&1 && echo "✅ UVX available" || echo "❌ UVX not found (install Anthropic SDK)"
-	@test -f data/raw/titanic_original.csv && echo "✅ Dataset ready" || echo "⚠️  Dataset missing (run 'make download')"
-	@test -d logs && echo "✅ Logs directory exists" || mkdir -p logs && echo "✅ Created logs directory"
-	@test -d plots && echo "✅ Plots directory exists" || mkdir -p plots && echo "✅ Created plots directory"
+	@echo "Checking setup..."
+	@command -v uvx >/dev/null 2>&1 && echo "OK: UVX available" || echo "FAIL: UVX not found (install Anthropic SDK)"
+	@test -f data/raw/titanic_original.csv && echo "OK: Dataset ready" || echo "WARN: Dataset missing (run 'make download')"
+	@test -d logs && echo "OK: Logs directory exists" || mkdir -p logs && echo "OK: Created logs directory"
+	@test -d plots && echo "OK: Plots directory exists" || mkdir -p plots && echo "OK: Created plots directory"
+
+# Code quality check with ruff
+lint:
+	@echo "Running ruff check on src/autoresearch_loop.py..."
+	@uvx ruff check src/autoresearch_loop.py --show-fixes || (echo "Ruff check failed"; exit 1)
+	@echo "All checks passed!"
 
 # Clean outputs (keep raw data and src code)
 clean:
@@ -53,17 +59,20 @@ clean-all: clean
 help:
 	@echo "Titanic Autoresearch - Autoresearch Loop with Autonomous Agent"
 	@echo ""
-	@echo "Usage:"
-	@echo "  make setup        - Download dataset (full one-time setup)"
-	@echo "  make run          - Run autoresearch loop (uses UVX, no venv needed)"
-	@echo "  make check        - Verify setup is ready"
-	@echo "  make clean        - Remove iteration outputs only (keep data)"
+	@echo "Setup & Execution:"
+	@echo "  make setup        - Download dataset (one-time setup)"
+	@echo "  make run          - Run autoresearch loop (uses UVX)"
+	@echo "  make check        - Verify environment and data"
+	@echo ""
+	@echo "Code Quality:"
+	@echo "  make lint         - Run ruff check on src/autoresearch_loop.py"
+	@echo ""
+	@echo "Cleanup:"
+	@echo "  make clean        - Remove iteration outputs (keep data)"
 	@echo "  make clean-all    - Remove all outputs"
 	@echo "  make help         - Show this help"
 	@echo ""
 	@echo "Quick start:"
-	@echo "  1. make setup     # Download data once"
-	@echo "  2. make run       # Start autoresearch loop"
-	@echo ""
-	@echo "To give to an agent:"
-	@echo "  See README.md for the complete agent prompt"
+	@echo "  1. make setup     # Download data"
+	@echo "  2. make lint      # Check code quality"
+	@echo "  3. make run       # Start autoresearch loop"
