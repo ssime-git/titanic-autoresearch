@@ -47,9 +47,12 @@ titanic-autoresearch/
 │   ├── main.py           # Entry point (orchestration)
 │   ├── data.py           # Load and preprocess
 │   ├── model.py          # Train and evaluate
-│   ├── features.py       # Agent modifies this
+│   ├── model_config.py   # Agent modifies for model selection
+│   ├── features.py       # Agent modifies for features
 │   ├── logging_utils.py  # Iteration logging
-│   └── visualization.py  # Plot generation
+│   ├── visualization.py  # Iteration progress plots
+│   ├── interpretability.py # Model interpretability visualizations
+│   └── analyze_final_model.py # Generate interpretability analysis
 ├── data/
 │   ├── raw/
 │   │   └── titanic_original.csv
@@ -59,7 +62,12 @@ titanic-autoresearch/
 ├── plots/
 │   ├── convergence_auc.png
 │   ├── feature_importance_latest.png
-│   └── metrics_dashboard.png
+│   ├── metrics_dashboard.png
+│   ├── interpretability_coefficients.png
+│   ├── interpretability_distributions.png
+│   ├── interpretability_confusion_matrix.png
+│   ├── interpretability_roc_curve.png
+│   └── interpretability_precision_recall.png
 ├── Makefile
 ├── requirements.txt
 └── .gitignore
