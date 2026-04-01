@@ -62,6 +62,14 @@ Each iteration:
 - `metrics_dashboard.png` – Heatmap of AUC, Precision, Recall, F1 across iterations.
 - Interpretability plots (`interpretability_*.png`) – Coefficients, ROC, PR curve, confusion matrix, prediction distributions.
 
+### Plot Images
+
+![Convergence AUC](plots/convergence_auc.png)
+
+![Feature Importance](plots/feature_importance_latest.png)
+
+![Metrics Dashboard](plots/metrics_dashboard.png)
+
 ## Reproducing the Experiment
 ```bash
 # Setup branch
