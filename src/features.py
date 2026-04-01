@@ -42,4 +42,22 @@ def create_features(
     if df_raw is not None:
         X_new["family_size"] = df_raw["sibsp"] + df_raw["parch"] + 1
 
+    # ITERATION 3: Title Extraction from Name
+    # Hypothesis: Social titles (Mr, Mrs, Master, Miss) capture age, gender, and status.
+    # Women and children (Master title means boy) were prioritized for lifeboats.
+    # Titles provide richer signal than sex/age separately.
+    if df_raw is not None and "name" in df_raw.columns:
+        titles = df_raw["name"].str.extract(r" ([A-Za-z]+)\.", expand=False)
+        title_mapping = {
+            "Mr": "Mr", "Miss": "Miss", "Mrs": "Mrs", "Master": "Master",
+            "Dr": "Rare", "Rev": "Rare", "Col": "Rare", "Major": "Rare",
+            "Mlle": "Miss", "Countess": "Rare", "Lady": "Rare",
+            "Jonkheer": "Rare", "Don": "Rare", "Dona": "Rare",
+            "Mme": "Mrs", "Capt": "Rare", "Sir": "Rare",
+        }
+        titles = titles.map(title_mapping).fillna("Rare")
+        title_dummies = pd.get_dummies(titles, prefix="title")
+        for col in title_dummies.columns:
+            X_new[col] = title_dummies[col].astype(float)
+
     return X_new
