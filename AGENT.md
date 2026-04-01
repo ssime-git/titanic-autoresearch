@@ -29,27 +29,30 @@ You are an autonomous AI researcher. Your task: iteratively improve a machine le
 
 **Each iteration**:
 
-1. Formulate a clear hypothesis (in English, explain why this feature should help)
-2. Implement the feature in `src/features.py` (modify `create_features()` function only)
+1. Formulate a clear hypothesis (in English, explain why this feature/model should help)
+2. Implement changes in `src/features.py` (new features) and/or `src/model_config.py` (model selection)
 3. Test by running: `make run`
 4. Analyze results: Why did it work or fail? Which subgroups benefited?
 5. Log to `logs/iterations.jsonl` (append-only JSONL, one line per iteration)
-6. Decide: Keep feature (if AUC improved) or discard (revert with `git reset --hard HEAD~1`)
-7. Commit: `git commit -m "Iteration N: feature_name - hypothesis_summary"`
+6. Decide: Keep changes (if AUC improved) or discard (revert with `git reset --hard HEAD~1`)
+7. Commit: `git commit -m "Iteration N: feature_or_model_name - hypothesis_summary"`
 8. Check stop condition: If plateau or 20 iterations, STOP and summarize
 
 ## What You CAN Do
 
-- Modify `src/features.py` (the ONLY file you edit)
+- Modify `src/features.py` to engineer new features
+- Modify `src/model_config.py` to select different sklearn classifiers and hyperparameters
 - Derive features from ANY dataset column (name, cabin, age, fare, sex, embarked, pclass, sibsp, parch, etc.)
 - Create interactions, bins, transformations (log, sqrt, polynomial, etc.)
-- Use any sklearn classifier that runs <1 min per iteration (LogisticRegression, RandomForest, DecisionTree, SVC, etc.)
+- Try any sklearn classifier that runs <1 min per iteration (LogisticRegression, RandomForest, DecisionTree, SVC, GradientBoosting, etc.)
+- Test different model hyperparameters (n_estimators, max_depth, kernel, C, etc.)
 - Add visualizations if helpful
-- Propose different features than PRD suggestions
+- Propose different features or models than PRD suggestions
 
 ## What You CANNOT Do
 
 - Modify `data/raw/titanic_original.csv` (read-only source)
+- Modify files other than `src/features.py` and `src/model_config.py`
 - Use target variable (y/Survived) to engineer features (target leakage forbidden)
 - Modify `requirements.txt` without justification
 - Change evaluation metric (AUC-ROC is ground truth)
@@ -72,6 +75,7 @@ Each iteration appends ONE JSON line to `logs/iterations.jsonl`:
   "hypothesis": "Older, wealthy passengers had higher survival rates. Age×Fare captures this subgroup.",
   "feature_name": "Age_Fare_Interaction",
   "feature_code": "df['Age_Fare_Interaction'] = df['Age'] * df['Fare']",
+  "model_change": "LogisticRegression(random_state=42, max_iter=1000)",
   "metrics": {
     "auc_roc": 0.8720,
     "precision": 0.7950,
@@ -151,12 +155,12 @@ plots/metrics_dashboard.png         # Heatmap of all metrics
 ## Rules
 
 1. Autonomy: DO NOT ask permission. Loop until stop condition.
-2. Hypothesis-driven: Every feature needs explicit reasoning (no random guessing).
+2. Hypothesis-driven: Every feature/model needs explicit reasoning (no random guessing).
 3. Reproducibility: Use `random_state=42` everywhere.
-4. Analysis: Explain why features work, not just that they improve AUC.
-5. Simplicity: Prefer simple features over complex ones for same AUC gain.
+4. Analysis: Explain why changes work, not just that they improve AUC.
+5. Simplicity: Prefer simple features/models over complex ones for same AUC gain.
 6. No target leakage: Features from X (input) only, never y (target).
-7. Only modify src/features.py: No new files.
+7. Only modify src/features.py and src/model_config.py: No other files.
 
 ## Stop Signals
 
@@ -175,18 +179,25 @@ Iteration 0 (baseline):
   → Run make run
   → Log: baseline_auc=0.8654, auc=0.8654, improvement=+0.3654 vs 0.5
 
-Iteration 1 (Age×Fare):
+Iteration 1 (Age×Fare feature):
   → Edit src/features.py: add Age_Fare_Interaction feature
   → Commit: "Iteration 1: Age_Fare_Interaction - Test older wealthy subgroup"
   → Run make run
   → Metrics: auc=0.8720, improvement=+0.0066 (vs baseline)
   → Decision: KEEP (improvement found)
 
-Iteration 2 (FamilySize):
-  → Edit: add FamilySize feature
+Iteration 2 (FamilySize feature):
+  → Edit src/features.py: add FamilySize feature
   → Commit and run
   → Metrics: auc=0.8710, improvement=-0.0010 (worse)
   → Decision: DISCARD (worse, revert with git reset --hard HEAD~1)
+
+Iteration 3 (RandomForest model):
+  → Edit src/model_config.py: change to RandomForestClassifier(n_estimators=100, random_state=42)
+  → Commit: "Iteration 3: RandomForest - Test ensemble model"
+  → Run make run
+  → Metrics: auc=0.8805, improvement=+0.0151 (better!)
+  → Decision: KEEP (improvement found)
 
 ... continue until plateau or 20 iterations ...
 ```

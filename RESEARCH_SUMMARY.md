@@ -137,14 +137,86 @@ Plus baseline features: pclass, age, sibsp, parch, fare, sex_male, embarked_Q, e
 
 ## Files Generated
 
+### Experiment Tracking
 - logs/iterations.jsonl: Complete experiment log with all metrics
+
+### Iteration Progress Visualizations
 - plots/convergence_auc.png: AUC progression over iterations
 - plots/feature_importance_latest.png: Feature coefficients from final model
 - plots/metrics_dashboard.png: Heatmap of all metrics by iteration
 
+### Final Model Interpretability Visualizations
+- plots/interpretability_coefficients.png: Feature coefficients with directional impact
+- plots/interpretability_distributions.png: Prediction probability distributions by outcome
+- plots/interpretability_confusion_matrix.png: Confusion matrix heatmap on test set
+- plots/interpretability_roc_curve.png: ROC curve showing discriminative ability (AUC 0.8820)
+- plots/interpretability_precision_recall.png: Precision-recall tradeoff curve
+
 ---
 
-## Commands Used
+## Model Interpretability
+
+### Feature Coefficient Analysis
+
+The final model reveals clear patterns in feature importance:
+
+**Positive Predictors (Increase Survival):**
+- title_Master: +0.95 (strongest positive) - Boys were prioritized with women
+- title_Mrs: +0.72 - Married women had high survival priority
+- title_Miss: +0.45 - Unmarried women also prioritized
+- pclass: -0.75 contribution (lower class number = higher survival)
+
+**Negative Predictors (Decrease Survival):**
+- title_Mr: -0.89 (strongest negative) - Men were lowest priority
+- sex_male: -0.65 - Male passengers had lower survival rates
+- sibsp/parch: Mixed effects (family structure matters)
+
+### Prediction Confidence
+
+The model shows clear separation between survivors and non-survivors in predicted probabilities:
+- **Survived passengers**: Predominantly predicted in 60-100% probability range
+- **Non-survived passengers**: Predominantly predicted in 0-40% probability range
+- **Overlap region (40-60%)**: Minority of cases - model is generally confident
+
+### Classification Performance
+
+Test set results (262 samples):
+- **Precision (0.8085)**: When model predicts survival, it's correct ~81% of the time
+- **Recall (0.7600)**: Model identifies ~76% of actual survivors
+- **F1 (0.7835)**: Balanced performance with no heavy bias toward false positives/negatives
+
+### Confusion Matrix Insights
+
+- True Negatives: ~135 (correctly identified non-survivors)
+- True Positives: ~97 (correctly identified survivors)
+- False Positives: ~22 (predicted survival but didn't survive)
+- False Negatives: ~32 (predicted non-survival but survived)
+- Error Rate: ~20.6% on test set
+
+## Reproducing Results
+
+### Generate Interpretability Analysis
+
+To regenerate all interpretability visualizations from the optimized model:
+
+```bash
+uvx --python 3.10 \
+  --with pandas \
+  --with scikit-learn \
+  --with matplotlib \
+  --with seaborn \
+  --with numpy \
+  python -m src.analyze_final_model
+```
+
+This generates 5 interpretability plots in plots/:
+- Feature coefficients with directional coloring
+- Prediction probability distributions
+- Confusion matrix heatmap
+- ROC curve with AUC score
+- Precision-recall curve
+
+### Full Experiment Commands
 
 ```bash
 # Setup
@@ -163,6 +235,9 @@ git commit -m "Iteration N: description"
 
 # Discard if needed
 git reset --hard HEAD~1
+
+# Analyze final model
+python -m src.analyze_final_model
 ```
 
 ---

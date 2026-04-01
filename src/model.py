@@ -4,8 +4,9 @@ import logging
 from typing import Any, Dict, Optional
 
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
+
+from .model_config import get_model
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,10 @@ def train_evaluate(
     random_state: int = 42,
     max_iter: int = 1000,
 ) -> Dict[str, Any]:
-    """Train LogisticRegression model and compute evaluation metrics.
+    """Train configured model and compute evaluation metrics.
+
+    Model is selected by get_model() in model_config.py.
+    Agent can modify model_config.py to try different classifiers.
 
     Args:
         X_tr: Training features (scaled).
@@ -28,16 +32,17 @@ def train_evaluate(
         y_te: Test target.
         feature_names: Optional list of feature names for importance tracking.
         random_state: Random seed for reproducibility.
-        max_iter: Maximum iterations for LogisticRegression.
+        max_iter: Maximum iterations for some models (unused if not applicable).
 
     Returns:
-        Dictionary with keys: auc_roc, precision, recall, f1, model, feature_importance.
+        Dictionary with keys: auc_roc, precision, recall, f1, model, feature_importance,
+        y_pred, y_pred_proba.
 
     Raises:
         ValueError: If model training fails.
     """
     try:
-        model = LogisticRegression(random_state=random_state, max_iter=max_iter)
+        model = get_model()
         model.fit(X_tr, y_tr)
 
         y_pred = model.predict(X_te)
@@ -51,13 +56,21 @@ def train_evaluate(
         if feature_names is None:
             feature_names = [f"f_{i}" for i in range(X_tr.shape[1])]
 
+        feature_importance = {}
+        if hasattr(model, "coef_"):
+            feature_importance = dict(zip(feature_names, model.coef_[0].tolist()))
+        elif hasattr(model, "feature_importances_"):
+            feature_importance = dict(zip(feature_names, model.feature_importances_.tolist()))
+
         return {
             "auc_roc": float(auc),
             "precision": float(pr),
             "recall": float(rc),
             "f1": float(f1),
             "model": model,
-            "feature_importance": dict(zip(feature_names, model.coef_[0].tolist())),
+            "feature_importance": feature_importance,
+            "y_pred": y_pred,
+            "y_pred_proba": y_proba,
         }
     except ValueError as e:
         logger.error(f"Model training failed: {e}")
