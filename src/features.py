@@ -66,4 +66,13 @@ def create_features(
         family_sz = df_raw["sibsp"] + df_raw["parch"] + 1
         X_new["is_alone"] = (family_sz == 1).astype(int)
 
+    # ITERATION 5: Fare per Family (Fare divided by family size)
+    # Hypothesis: Wealth per person may be a more relevant predictor than total fare.
+    # For passengers traveling alone, this equals fare; for families, it reflects
+    # shared expense. May capture economic status more accurately.
+    if df_raw is not None:
+        family_sz = df_raw["sibsp"] + df_raw["parch"] + 1
+        # Avoid division by zero (should not happen as family_sz >=1)
+        X_new["fare_per_family"] = X_new["fare"] / family_sz
+
     return X_new
